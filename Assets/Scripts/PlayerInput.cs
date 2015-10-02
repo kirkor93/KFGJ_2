@@ -7,4 +7,9 @@ public class PlayerInput : MonoBehaviour
     {
         return new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0.0f);
     }
+
+    public bool IsShooting()
+    {
+        return Input.GetMouseButtonDown(0);
+    }
 }

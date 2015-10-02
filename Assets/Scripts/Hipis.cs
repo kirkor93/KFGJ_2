@@ -11,7 +11,7 @@ public class Hipis : Humanoid
         //Update hipis
     }
 
-    protected override void OnHit(float damageValue)
+    protected override void OnHit(Vector3 direction, float damageValue)
     {
         //Loose score
         PlayerState.Instance.SubstractScore(ScoreToLoose);

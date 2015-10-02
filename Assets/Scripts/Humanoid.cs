@@ -18,7 +18,7 @@ public abstract class Humanoid : MonoBehaviour
 
     protected abstract void OnUpdate();
 
-    public void Hit(float damageValue)
+    public void Hit(Vector3 direction, float damageValue)
     {
         if(_isDead)
         {
@@ -26,14 +26,14 @@ public abstract class Humanoid : MonoBehaviour
         }
 
         _hp -= damageValue;
-        OnHit(damageValue);
+        OnHit(direction, damageValue);
         if(_hp <= 0.0f)
         {
             Die();
         }
     }
 
-    protected abstract void OnHit(float damageValue);
+    protected abstract void OnHit(Vector3 direction, float damageValue);
 
     protected virtual void Die()
     {
