@@ -12,6 +12,8 @@ public class Spawner : Singleton<Spawner>
     private int _enemiesOnLevel = 0;
     private int _hipisOnLevel = 0;
 
+    private int _wave;
+
     [Header("Day phase")]
     public GameObject SunPrefab;
     public GameObject WormPrefab;
@@ -53,6 +55,7 @@ public class Spawner : Singleton<Spawner>
 
     private void OnNight()
     {
+        ++_wave;
         Invoke("SpawnEnemy", 1.0f);
         Invoke("SpawnHipis", 2.5f);
     }
@@ -64,12 +67,18 @@ public class Spawner : Singleton<Spawner>
             return;
         }
 
-        int spawnPointIndex = Random.Range(0, SpawnPoints.Count);
-        Instantiate(EnemyPrefab, SpawnPoints[spawnPointIndex].position, Quaternion.identity);
+        int howMuch = (int)(_wave * Random.Range(1.0f, 2.0f));
 
-        _enemiesOnLevel += 1;
+        for(int i = 0; i < howMuch; ++i)
+        {
 
-        Invoke("SpawnEnemy", 2.0f * (_enemiesOnLevel + 1));
+            int spawnPointIndex = Random.Range(0, SpawnPoints.Count);
+            Instantiate(EnemyPrefab, SpawnPoints[spawnPointIndex].position, Quaternion.identity);
+
+            _enemiesOnLevel += 1;
+        }
+
+        Invoke("SpawnEnemy", 1.0f * (_enemiesOnLevel + 1));
     }
 
     private void SpawnHipis()
@@ -84,7 +93,7 @@ public class Spawner : Singleton<Spawner>
 
         _hipisOnLevel += 1;
 
-        Invoke("SpawnHipis", 3.0f * (_hipisOnLevel + 1));
+        Invoke("SpawnHipis", 1.5f * (_hipisOnLevel + 1));
     }
 
     public void EnemyDead()
