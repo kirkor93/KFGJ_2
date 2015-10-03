@@ -15,6 +15,7 @@ public class Enemy : Humanoid
     public float MaxSpeed = 7.0f;
     public float HitImpactMultiplier = 0.01f;
     public float Damage = 10.0f;
+    public AudioClip AttackSound;
 
     //Management variables
     private State _currentState = State.MOVE_TO_TARGET;
@@ -127,6 +128,7 @@ public class Enemy : Humanoid
     protected override void OnDie()
     {
         _myBody.Sleep();
+        _myAnimator.SetBool("isAttacking", false);
         Spawner.Instance.EnemyDead();
     }
 
@@ -141,6 +143,10 @@ public class Enemy : Humanoid
         if(_target == null)
         {
             _target = GameController.Instance.Player.GetComponent<Humanoid>();
+            if(Vector3.Distance(_target.transform.position, transform.position) < 2.5f)
+            {
+                ChangeState(State.ATTACK);
+            }
             return false;
         }
 
@@ -166,6 +172,7 @@ public class Enemy : Humanoid
             Vector3 direction = _target.transform.position - transform.position;
             direction.Normalize();
             _target.Hit(direction, Damage, this);
+            AudioSource.PlayClipAtPoint(AttackSound, transform.position);
         }
     }
 

@@ -6,6 +6,7 @@ using System;
 public class Worm : Clickable
 {
     public float Speed = 8.0f;
+    public AudioClip ThrowSound;
 
     private bool _isHold = false;
     private Vector3 _swipeDistance;
@@ -54,6 +55,7 @@ public class Worm : Clickable
                     {
                         _swipeDistance *= 15.0f / _swipeDistance.magnitude;
                     }
+                    AudioSource.PlayClipAtPoint(ThrowSound, transform.position);
                     _myBody.velocity = _swipeDistance;
                     Destroy(gameObject, 3.0f);
                 }

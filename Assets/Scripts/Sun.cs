@@ -4,6 +4,7 @@ using System;
 
 public class Sun : Clickable
 {
+    public AudioClip CollectEffect;
     public float Speed = 3.0f;
 
     void Update()
@@ -15,6 +16,7 @@ public class Sun : Clickable
 
     public override void Click()
     {
+        AudioSource.PlayClipAtPoint(CollectEffect, GameController.Instance.MainCamera.transform.position);
         GameController.Instance.Player.SendMessage("SunCollected");
         Destroy(gameObject);
     }
