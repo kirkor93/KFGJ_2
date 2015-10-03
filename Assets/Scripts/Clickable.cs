@@ -15,14 +15,17 @@ public abstract class Clickable : MonoBehaviour
         _appQuiting = true;
     }
 
-    void OnDestroy()
+    void OnDisable()
     {
         if(_appQuiting)
         {
             return;
         }
 
-        GameController.Instance.OnNight -= OnNight;
+        if(GameController.Instance != null)
+        {
+            GameController.Instance.OnNight -= OnNight;
+        }
     }
 
     public abstract void Click();

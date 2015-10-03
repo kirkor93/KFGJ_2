@@ -123,7 +123,7 @@ public abstract class Humanoid : MonoBehaviour
             float timer = 0.0f;
             while (timer <= 1.0f)
             {
-                timer += Time.deltaTime * (count + 7) * 0.5f;
+                timer += Time.deltaTime * (count + 15) * 0.5f;
                 yield return null;
             }
             c.a = 0.0f;

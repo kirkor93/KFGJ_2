@@ -12,11 +12,18 @@ public class PlayerUI : MonoBehaviour
 {
     public float GameOverTextSpeed = 5.0f;
 
+    public Sprite DayClockSprite;
+    public Sprite NightClockSprite;
+
+    public UnityEngine.UI.Image BackgroundClockImage;
+    public UnityEngine.UI.Image ForegroundClockImage;
     public UnityEngine.UI.Image ClockImage;
     public UnityEngine.UI.Image HPBarImage;
 
     public UnityEngine.UI.Text HPText;
     public UnityEngine.UI.Text GameOverText;
+    public UnityEngine.UI.Text YourScoreText;
+    public UnityEngine.UI.Text RestartText;
     public UnityEngine.UI.Text ScoreText;
     public UnityEngine.UI.Text ScoreValueChangedTextPrefab;
 
@@ -49,10 +56,24 @@ public class PlayerUI : MonoBehaviour
 
     void Update()
     {
-        if(ClockImage != null)
+        if(ForegroundClockImage != null)
         {
-            ClockImage.fillAmount = 1.0f - GameController.Instance.Timer / GameController.Instance.PeriodTime;
+            ForegroundClockImage.fillAmount = 1.0f - GameController.Instance.Timer / GameController.Instance.PeriodTime;
         }
+    }
+
+    void OnDay()
+    {
+        ForegroundClockImage.sprite = DayClockSprite;
+        BackgroundClockImage.sprite = NightClockSprite;
+        ForegroundClockImage.fillAmount = 1.0f;
+    }
+
+    void OnNight()
+    {
+        ForegroundClockImage.sprite = NightClockSprite;
+        BackgroundClockImage.sprite = DayClockSprite;
+        ForegroundClockImage.fillAmount = 1.0f;
     }
 
     IEnumerator WaitToInitialize()
@@ -73,6 +94,8 @@ public class PlayerUI : MonoBehaviour
 
         GameController.Instance.OnGameOver += ShowGameOver;
         GameController.Instance.OnPlayerHPChanged += UpdateHPInfo;
+        GameController.Instance.OnDay += OnDay;
+        GameController.Instance.OnNight += OnNight;
         UpdateHPInfo();
     }
 
@@ -140,10 +163,16 @@ public class PlayerUI : MonoBehaviour
 
     void ShowGameOver()
     {
+        BackgroundClockImage.gameObject.SetActive(false);
+        ForegroundClockImage.gameObject.SetActive(false);
         ClockImage.gameObject.SetActive(false);
         HPBarImage.gameObject.SetActive(false);
         HPText.gameObject.SetActive(false);
         ScoreText.gameObject.SetActive(false);
+        YourScoreText.text = "Your score: ";
+        YourScoreText.text += PlayerState.Instance.Score.ToString();
+        YourScoreText.gameObject.SetActive(true);
+        RestartText.gameObject.SetActive(true);
         foreach(ScoreChangedStruct scs in _scoreValueChangedTexts)
         {
             scs.ScoreText.gameObject.SetActive(false);
@@ -160,6 +189,16 @@ public class PlayerUI : MonoBehaviour
         bool enlarge = true;
         while(true)
         {
+            if(Input.GetMouseButtonDown(0))
+            {
+                Application.LoadLevel("MainMenu");
+            }
+
+            if(Input.GetKeyDown(KeyCode.Escape))
+            {
+                Application.Quit();
+            }
+
             if(enlarge)
             {
                 timer += Time.unscaledDeltaTime * GameOverTextSpeed;

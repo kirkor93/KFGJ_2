@@ -30,6 +30,16 @@ public class Worm : Clickable
         }
     }
 
+    void OnEnable()
+    {
+        Vector3 direction = GameController.Instance.Player.transform.position - transform.position;
+        float dot = Vector3.Dot(direction, transform.up);
+        float cos = dot / (direction.magnitude * transform.up.magnitude);
+        float angle = Mathf.Acos(cos);
+        angle *= -Mathf.Sign(Vector3.Dot(direction, transform.right));
+        transform.Rotate(new Vector3(0.0f, 0.0f, Mathf.Rad2Deg * angle));
+    }
+
     void Update()
     {
         if(_isHold)

@@ -21,6 +21,9 @@ public class Player : Humanoid
     private float _timeElapsed = 0.0f;
     private bool _isDay = false;
 
+    private RigidbodyConstraints2D _nightConstraints;
+    private RigidbodyConstraints2D _dayConstraints;
+
 	// Use this for initialization
 	void Start ()
     {
@@ -28,6 +31,9 @@ public class Player : Humanoid
         _myState = GetComponent<PlayerState>();
         _myInput = GetComponent<PlayerInput>();
         _myBody = GetComponent<Rigidbody2D>();
+
+        _dayConstraints = RigidbodyConstraints2D.FreezeAll;
+        _nightConstraints = RigidbodyConstraints2D.FreezeRotation;
 
         GameController.Instance.OnDay += OnDay;
         GameController.Instance.OnNight += OnNight;
@@ -37,10 +43,9 @@ public class Player : Humanoid
     {
         _isDay = true;
         _myBody.velocity = Vector3.zero;
-        _myBody.freezeRotation = true;
         TreeSprite.SetActive(true);
         HeroSprite.SetActive(false);
-        transform.rotation = Quaternion.identity;
+        _myBody.constraints = _dayConstraints;
     }
 
     void OnNight()
@@ -48,6 +53,7 @@ public class Player : Humanoid
         _isDay = false;
         TreeSprite.SetActive(false);
         HeroSprite.SetActive(true);
+        _myBody.constraints = _nightConstraints;
     }
     
     protected override void OnUpdate()
@@ -75,11 +81,6 @@ public class Player : Humanoid
         else
         {
             _myBody.velocity = _myInput.GetMovementVector() * Speed;
-
-            Vector3 pos = GameController.Instance.MainCamera.WorldToScreenPoint(transform.position);
-            Vector3 dir = Input.mousePosition - pos;
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            _myBody.rotation = angle;
 
             _timeElapsed += Time.deltaTime;
 
@@ -117,8 +118,12 @@ public class Player : Humanoid
 
         _timeElapsed = 0.0f;
 
+        Vector3 direction = GameController.Instance.MainCamera.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+        direction.z = 0.0f;
+        direction.Normalize();
+
         GameObject bullet = Instantiate(BulletPrefab, transform.position, transform.rotation) as GameObject;
-        bullet.GetComponent<Bullet>().Shoot(transform.right);
+        bullet.GetComponent<Bullet>().Shoot(direction);
         Destroy(bullet, 0.25f);
     }
 
