@@ -14,7 +14,7 @@ public abstract class Humanoid : MonoBehaviour
     protected bool _isDead = false;
     [SerializeField]
     protected SpriteRenderer _myRenderer;
-    protected BoxCollider2D[] _myColliders;
+    protected Collider2D[] _myColliders;
 
     protected float _timer = 0.0f;
     protected bool _up = true;
@@ -34,7 +34,7 @@ public abstract class Humanoid : MonoBehaviour
                 _myRenderer = GetComponentInChildren<SpriteRenderer>();
             }
         }
-        _myColliders = GetComponents<BoxCollider2D>();
+        _myColliders = GetComponents<Collider2D>();
     }
 
     protected void Update()
@@ -110,7 +110,7 @@ public abstract class Humanoid : MonoBehaviour
 
     protected IEnumerator DieEffect()
     {
-        foreach(BoxCollider2D col in _myColliders)
+        foreach(Collider2D col in _myColliders)
         {
             col.enabled = false;
         }
@@ -134,7 +134,7 @@ public abstract class Humanoid : MonoBehaviour
         Color c1 = _myRenderer.color;
         c1.a = 0.0f;
         _myRenderer.color = c1;
-        foreach (BoxCollider2D col in _myColliders)
+        foreach (Collider2D col in _myColliders)
         {
             col.enabled = true;
         }
