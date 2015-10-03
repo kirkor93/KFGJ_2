@@ -138,6 +138,6 @@ public abstract class Humanoid : MonoBehaviour
         {
             col.enabled = true;
         }
-        gameObject.SetActive(false);
+        Destroy(gameObject);
     }
 }

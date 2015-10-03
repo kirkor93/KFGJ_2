@@ -12,7 +12,7 @@ public class Hipis : Humanoid
     {
         //Update hipis
         Vector3 direction = GameController.Instance.Player.transform.position - transform.position;
-        if(direction.magnitude > 1.5f)
+        if(direction.magnitude > 2.0f)
         {
             transform.position += direction.normalized * Time.deltaTime * Speed;
         }
