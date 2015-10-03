@@ -114,7 +114,7 @@ public class Spawner : Singleton<Spawner>
         }
 
         float x = Random.Range(_minimumPoint.x, _maximumPoint.x);
-        float y = Random.Range(_minimumPoint.y, _maximumPoint.y);
+        float y = _maximumPoint.y + 1.0f;
         Vector3 position = new Vector3(x, y, 0.0f);
         Instantiate(SunPrefab, position, Quaternion.identity);
 
