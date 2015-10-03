@@ -17,6 +17,7 @@ public class Player : Humanoid
     private PlayerState _myState;
     private PlayerInput _myInput;
     private Rigidbody2D _myBody;
+    private Animator _myAnimator;
 
     private float _timeElapsed = 0.0f;
     private bool _isDay = false;
@@ -31,6 +32,7 @@ public class Player : Humanoid
         _myState = GetComponent<PlayerState>();
         _myInput = GetComponent<PlayerInput>();
         _myBody = GetComponent<Rigidbody2D>();
+        _myAnimator = GetComponent<Animator>();
 
         _dayConstraints = RigidbodyConstraints2D.FreezeAll;
         _nightConstraints = RigidbodyConstraints2D.FreezeRotation;
@@ -54,6 +56,16 @@ public class Player : Humanoid
         TreeSprite.SetActive(false);
         HeroSprite.SetActive(true);
         _myBody.constraints = _nightConstraints;
+    }
+
+    void FixedUpdate()
+    {
+        if(!_isDay)
+        {
+            Vector3 movement = _myInput.GetMovementVector();
+            _myBody.velocity = movement * Speed;
+            _myAnimator.SetBool("isWalking", movement.magnitude > 0.0f);
+        }
     }
     
     protected override void OnUpdate()
@@ -80,8 +92,6 @@ public class Player : Humanoid
         }
         else
         {
-            _myBody.velocity = _myInput.GetMovementVector() * Speed;
-
             _timeElapsed += Time.deltaTime;
 
             if (_myInput.IsShooting())

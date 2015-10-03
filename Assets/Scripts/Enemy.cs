@@ -29,15 +29,60 @@ public class Enemy : Humanoid
     //Moving variables
     private Vector3 direction = Vector3.zero;
     private float _speed = 0.0f;
+    private bool _lookRight = false;
+    [SerializeField]
+    private Rigidbody2D _myBody;
 
     //Attack variables
     private Humanoid _target;
+
+    //Animations
+    [SerializeField]
+    private Animator _myAnimator;
 
     void Start()
     {
         _speed = UnityEngine.Random.Range(MinSpeed, MaxSpeed);
         _target = GameController.Instance.Player.GetComponent<Humanoid>();
         InvokeRepeating("Attack", 1.0f, 1.0f);
+    }
+
+    void FixedUpdate()
+    {
+        if(IsDead)
+        {
+            return;
+        }
+
+        direction = (_target.transform.position - transform.position);
+        if (direction.x > 0.0f && !_lookRight)
+        {
+            Vector3 scale = transform.localScale;
+            scale.x *= -1.0f;
+            transform.localScale = scale;
+            _lookRight = true;
+        }
+        else if (direction.x < 0.0f && _lookRight)
+        {
+            Vector3 scale = transform.localScale;
+            scale.x *= -1.0f;
+            transform.localScale = scale;
+            _lookRight = false;
+        }
+        if (direction.magnitude < transform.localScale.y)
+        {
+            ChangeState(State.ATTACK);
+        }
+        else
+        {
+            ChangeState(State.MOVE_TO_TARGET);
+        }
+
+        if (_currentState == State.MOVE_TO_TARGET)
+        {
+            //_myBody.velocity = direction.normalized * _speed;
+            transform.position += direction.normalized * _speed * Time.deltaTime;
+        }
     }
 
     protected override void OnUpdate()
@@ -62,24 +107,7 @@ public class Enemy : Humanoid
             return;
         }
 
-        direction = (_target.transform.position - transform.position);
-        if(direction.magnitude < 1.5f)
-        {
-            ChangeState(State.ATTACK);
-        }
-        else
-        {
-            ChangeState(State.MOVE_TO_TARGET);
-        }
-
-        if(_currentState == State.MOVE_TO_TARGET)
-        {
-            transform.position += direction.normalized * _speed * Time.deltaTime;
-        }
-        else
-        {
-            //Attack target
-        }
+        _myAnimator.SetBool("isAttacking", _currentState == State.ATTACK);
     }
 
     protected override void OnHit(Vector3 direction, float damageValue, Humanoid predator)
@@ -101,6 +129,7 @@ public class Enemy : Humanoid
 
     protected override void OnDie()
     {
+        _myBody.Sleep();
         Spawner.Instance.EnemyDead();
     }
 
