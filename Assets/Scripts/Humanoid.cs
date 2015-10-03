@@ -1,19 +1,38 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public abstract class Humanoid : MonoBehaviour
 {
-    protected float _hp = 100.0f;
+    [Header("Humanoid things")]
+    public float HP = 100.0f;
+    public float FloatingSpeed = 5.0f;
+    public float FloatingY = 0.3f;
+    public Transform _childSpriteObject;
+    public bool IsPlayer = false;
+
     protected bool _isDead = false;
+    [SerializeField]
     protected SpriteRenderer _myRenderer;
     protected BoxCollider2D[] _myColliders;
 
-    void Start()
+    protected float _timer = 0.0f;
+    protected bool _up = true;
+
+    public bool IsDead
     {
-        _myRenderer = GetComponent<SpriteRenderer>();
+        get { return _isDead; }
+    }
+
+    void OnEnable()
+    {
         if(_myRenderer == null)
         {
-            _myRenderer = GetComponentInChildren<SpriteRenderer>();
+            _myRenderer = GetComponent<SpriteRenderer>();
+            if (_myRenderer == null)
+            {
+                _myRenderer = GetComponentInChildren<SpriteRenderer>();
+            }
         }
         _myColliders = GetComponents<BoxCollider2D>();
     }
@@ -24,36 +43,72 @@ public abstract class Humanoid : MonoBehaviour
         {
             return;
         }
+        
+        if(!IsPlayer)
+        {
+            Float();
+        }
 
         OnUpdate();
     }
 
+    protected void Float()
+    {
+        if (_childSpriteObject != null)
+        {
+            if (_up)
+            {
+                _timer += Time.deltaTime * FloatingSpeed;
+                if (_timer >= 1.0f)
+                {
+                    _up = false;
+                }
+            }
+            else
+            {
+                _timer -= Time.deltaTime * FloatingSpeed;
+                if (_timer <= 0.0f)
+                {
+                    _up = true;
+                }
+            }
+            _childSpriteObject.localPosition = new Vector3(0.0f, Mathf.Lerp(-FloatingY, FloatingY, _timer), 0.0f);
+        }
+    }
+
     protected abstract void OnUpdate();
 
-    public void Hit(Vector3 direction, float damageValue)
+    public void Hit(Vector3 direction, float damageValue, Humanoid predator)
     {
         if(_isDead)
         {
             return;
         }
 
-        _hp -= damageValue;
-        OnHit(direction, damageValue);
-        if(_hp <= 0.0f)
+        HP -= damageValue;
+        if(HP < 0.0f)
+        {
+            HP = 0.0f;
+        }
+        OnHit(direction, damageValue, predator);
+        if(HP <= 0.0f)
         {
             Die();
         }
     }
 
-    protected abstract void OnHit(Vector3 direction, float damageValue);
+    protected abstract void OnHit(Vector3 direction, float damageValue, Humanoid predator);
 
     protected void Die()
     {
         _isDead = true;
-        StartCoroutine(OnDie());
+        OnDie();
+        StartCoroutine(DieEffect());
     }
 
-    protected IEnumerator OnDie()
+    protected abstract void OnDie();
+
+    protected IEnumerator DieEffect()
     {
         foreach(BoxCollider2D col in _myColliders)
         {

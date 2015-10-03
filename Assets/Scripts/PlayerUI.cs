@@ -8,8 +8,15 @@ struct ScoreChangedStruct
     public Color TextColor;
 }
 
-public class PlayerUI : MonoBehaviour {
+public class PlayerUI : MonoBehaviour
+{
+    public float GameOverTextSpeed = 5.0f;
 
+    public UnityEngine.UI.Image ClockImage;
+    public UnityEngine.UI.Image HPBarImage;
+
+    public UnityEngine.UI.Text HPText;
+    public UnityEngine.UI.Text GameOverText;
     public UnityEngine.UI.Text ScoreText;
     public UnityEngine.UI.Text ScoreValueChangedTextPrefab;
 
@@ -17,12 +24,7 @@ public class PlayerUI : MonoBehaviour {
     private Vector2 _initPosition;
     private Vector2 _targetPosition;
 
-	void OnDisable()
-    {
-        PlayerState.Instance.OnScoreChange -= OnScoreChange;
-    }
-
-    void OnEnable()
+    void Awake()
     {
         StartCoroutine(WaitToInitialize());
 
@@ -45,6 +47,14 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
+    void Update()
+    {
+        if(ClockImage != null)
+        {
+            ClockImage.fillAmount = 1.0f - GameController.Instance.Timer / GameController.Instance.PeriodTime;
+        }
+    }
+
     IEnumerator WaitToInitialize()
     {
         while(PlayerState.Instance == null)
@@ -55,6 +65,15 @@ public class PlayerUI : MonoBehaviour {
         PlayerState.Instance.OnScoreChange += OnScoreChange;
 
         ScoreText.text = PlayerState.Instance.Score.ToString();
+
+        while(GameController.Instance == null)
+        {
+            yield return null;
+        }
+
+        GameController.Instance.OnGameOver += ShowGameOver;
+        GameController.Instance.OnPlayerHPChanged += UpdateHPInfo;
+        UpdateHPInfo();
     }
 
     protected void OnScoreChange(int valueChanged)
@@ -91,7 +110,13 @@ public class PlayerUI : MonoBehaviour {
         ScoreText.text = PlayerState.Instance.Score.ToString();
 
         StartCoroutine(ScoreChanged(scs));
+    }
 
+    void UpdateHPInfo()
+    {
+        Player player = GameController.Instance.Player.GetComponent<Player>();
+        HPText.text = player.HP + " / " + player.MaxHP;
+        HPBarImage.fillAmount = player.HP / player.MaxHP;
     }
 
     IEnumerator ScoreChanged(ScoreChangedStruct currentStruct)
@@ -111,5 +136,52 @@ public class PlayerUI : MonoBehaviour {
         yield return new WaitForEndOfFrame();
         currentStruct.ScoreText.gameObject.SetActive(false);
         _scoreValueChangedTexts.Enqueue(currentStruct);
+    }
+
+    void ShowGameOver()
+    {
+        ClockImage.gameObject.SetActive(false);
+        HPBarImage.gameObject.SetActive(false);
+        HPText.gameObject.SetActive(false);
+        ScoreText.gameObject.SetActive(false);
+        foreach(ScoreChangedStruct scs in _scoreValueChangedTexts)
+        {
+            scs.ScoreText.gameObject.SetActive(false);
+        }
+        StartCoroutine(AnimateGameOver());
+    }
+
+    IEnumerator AnimateGameOver()
+    {
+        GameOverText.fontSize = 20;
+        GameOverText.gameObject.SetActive(true);
+
+        float timer = 0.0f;
+        bool enlarge = true;
+        while(true)
+        {
+            if(enlarge)
+            {
+                timer += Time.unscaledDeltaTime * GameOverTextSpeed;
+            }
+            else
+            {
+                timer -= Time.unscaledDeltaTime * GameOverTextSpeed;
+            }
+
+            GameOverText.fontSize = (int)Mathf.Lerp(20, 80, timer);
+
+            if(enlarge && timer > 1.0f)
+            {
+                enlarge = false;
+            }
+
+            if (!enlarge && timer < 0.0f)
+            {
+                enlarge = true;
+            }
+
+            yield return null;
+        }
     }
 }

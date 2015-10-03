@@ -8,6 +8,7 @@ public class Bullet : MonoBehaviour {
     public float Damage = 5.0f;
 
     private Rigidbody2D _myBody;
+    private Humanoid _playerHumanoidScript;
 
     void Awake()
     {
@@ -16,6 +17,10 @@ public class Bullet : MonoBehaviour {
 
     public void Shoot(Vector3 InDirection)
     {
+        if(_playerHumanoidScript == null)
+        {
+            _playerHumanoidScript = GameController.Instance.Player.GetComponent<Humanoid>();
+        }
         _myBody.velocity = InDirection * Speed;
     }
 
@@ -23,7 +28,7 @@ public class Bullet : MonoBehaviour {
     {
         if (col.gameObject.layer == LayerMask.NameToLayer("Damagable"))
         {
-            col.GetComponent<Humanoid>().Hit(_myBody.velocity.normalized, Damage);
+            col.GetComponent<Humanoid>().Hit(_myBody.velocity.normalized, Damage, _playerHumanoidScript);
             Destroy(gameObject);
         }
     }

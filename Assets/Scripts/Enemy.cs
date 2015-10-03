@@ -10,8 +10,10 @@ public enum State
 
 public class Enemy : Humanoid
 {
+    [Header("Enemy")]
     public float Speed = 5.0f;
     public float HitImpactMultiplier = 0.01f;
+    public float Damage = 10.0f;
 
     //Management variables
     private State _currentState = State.MOVE_TO_TARGET;
@@ -25,6 +27,15 @@ public class Enemy : Humanoid
 
     //Moving variables
     private Vector3 direction = Vector3.zero;
+
+    //Attack variables
+    private Humanoid _target;
+
+    void Start()
+    {
+        _target = GameController.Instance.Player.GetComponent<Humanoid>();
+        InvokeRepeating("Attack", 1.0f, 1.0f);
+    }
 
     protected override void OnUpdate()
     {
@@ -43,7 +54,12 @@ public class Enemy : Humanoid
             return;
         }
 
-        direction = (GameController.Instance.Player.transform.position - transform.position);
+        if(_target == null)
+        {
+            return;
+        }
+
+        direction = (_target.transform.position - transform.position);
         if(direction.magnitude < 1.5f)
         {
             ChangeState(State.ATTACK);
@@ -63,7 +79,7 @@ public class Enemy : Humanoid
         }
     }
 
-    protected override void OnHit(Vector3 direction, float damageValue)
+    protected override void OnHit(Vector3 direction, float damageValue, Humanoid predator)
     {
         _isHit = true;
         _myPosition = transform.position;
@@ -77,6 +93,48 @@ public class Enemy : Humanoid
         if(_currentState != newState)
         {
             _currentState = newState;
+        }
+    }
+
+    protected override void OnDie()
+    {
+        Spawner.Instance.EnemyDead();
+    }
+
+    public bool SetTarget(Humanoid target)
+    {
+        if(_target != null && !_target.IsDead && _target.gameObject.layer == LayerMask.NameToLayer("Damagable"))
+        {
+            return false;
+        }
+
+        _target = target;
+        if(_target == null)
+        {
+            _target = GameController.Instance.Player.GetComponent<Humanoid>();
+            return false;
+        }
+
+        return true;
+    }
+
+    public Humanoid GetTarget()
+    {
+        return _target;
+    }
+
+    protected void Attack()
+    {
+        if(_currentState != State.ATTACK)
+        {
+            return;
+        }
+
+        if(_target != null)
+        {
+            Vector3 direction = _target.transform.position - transform.position;
+            direction.Normalize();
+            _target.Hit(direction, Damage, this);
         }
     }
 }

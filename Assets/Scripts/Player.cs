@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
-[RequireComponent(typeof(Rigidbody2D))]
-public class Player : MonoBehaviour
+public class Player : Humanoid
 {
+    [Header("Player")]
+    public float MaxHP = 5000.0f;
     public float Speed = 5.0f;
     public float Cooldown = 0.3f;
 
@@ -23,9 +25,8 @@ public class Player : MonoBehaviour
         _myInput = GetComponent<PlayerInput>();
         _myBody = GetComponent<Rigidbody2D>();
 	}
-	
-	// Update is called once per frame
-	void Update ()
+    
+    protected override void OnUpdate()
     {
         _myBody.velocity = _myInput.GetMovementVector() * Speed;
 
@@ -36,10 +37,27 @@ public class Player : MonoBehaviour
 
         timeElapsed += Time.deltaTime;
 
-        if(_myInput.IsShooting())
+        if (_myInput.IsShooting())
         {
             Shoot();
         }
+        if(Input.GetKey(KeyCode.K))
+        {
+            Hit(Vector3.zero, MaxHP, this);
+        }
+    }
+
+    protected override void OnHit(Vector3 direction, float damageValue, Humanoid predator)
+    {
+        if(GameController.Instance.OnPlayerHPChanged != null)
+        {
+            GameController.Instance.OnPlayerHPChanged();
+        }
+    }
+
+    protected override void OnDie()
+    {
+        GameController.Instance.PlayerDead();
     }
 
     void Shoot()
