@@ -15,6 +15,7 @@ public class PlayerUI : MonoBehaviour
     public Sprite DayClockSprite;
     public Sprite NightClockSprite;
 
+    public UnityEngine.UI.Image BloodImage;
     public UnityEngine.UI.Image BackgroundClockImage;
     public UnityEngine.UI.Image ForegroundClockImage;
     public UnityEngine.UI.Image ClockImage;
@@ -140,6 +141,14 @@ public class PlayerUI : MonoBehaviour
         Player player = GameController.Instance.Player.GetComponent<Player>();
         HPText.text = player.HP + " / " + player.MaxHP;
         HPBarImage.fillAmount = player.HP / player.MaxHP;
+
+        float x = player.HP / player.MaxHP;
+        if (x < 0.5f)
+        {
+            Color c = BloodImage.color;
+            c.a = -2.0f * x + 1.0f;
+            BloodImage.color = c;
+        }
     }
 
     IEnumerator ScoreChanged(ScoreChangedStruct currentStruct)

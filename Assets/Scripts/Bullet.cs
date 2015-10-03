@@ -2,8 +2,9 @@
 using System.Collections;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class Bullet : MonoBehaviour {
-
+public class Bullet : MonoBehaviour
+{
+    public AudioClip HitSound;
     public float Speed;
     public float Damage = 5.0f;
 
@@ -29,6 +30,7 @@ public class Bullet : MonoBehaviour {
         if (col.gameObject.layer == LayerMask.NameToLayer("Damagable"))
         {
             col.GetComponent<Humanoid>().Hit(_myBody.velocity.normalized, Damage, _playerHumanoidScript);
+            AudioSource.PlayClipAtPoint(HitSound, transform.position);
             Destroy(gameObject);
         }
     }
