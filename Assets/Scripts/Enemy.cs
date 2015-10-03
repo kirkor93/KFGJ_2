@@ -161,8 +161,6 @@ public class Enemy : Humanoid
             return;
         }
 
-        Debug.Log("Attack");
-
         if(_target != null)
         {
             Vector3 direction = _target.transform.position - transform.position;
