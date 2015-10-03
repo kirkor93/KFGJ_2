@@ -147,7 +147,6 @@ public class PlayerUI : MonoBehaviour
         {
             Color c = BloodImage.color;
             c.a = -2.0f * x + 1.0f;
-            Debug.Log(c.a);
             BloodImage.color = c;
         }
     }
