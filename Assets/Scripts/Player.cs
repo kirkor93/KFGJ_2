@@ -8,6 +8,7 @@ public class Player : Humanoid
     public float MaxHP = 5000.0f;
     public float Speed = 5.0f;
     public float Cooldown = 0.3f;
+    public float SunHP = 50.0f;
 
     public GameObject BulletPrefab;
     public GameObject TreeSprite;
@@ -124,5 +125,10 @@ public class Player : Humanoid
     protected void SunCollected()
     {
         _myState.AddScore(50);
+        HP += SunHP;
+        if (GameController.Instance.OnPlayerHPChanged != null)
+        {
+            GameController.Instance.OnPlayerHPChanged();
+        }
     }
 }

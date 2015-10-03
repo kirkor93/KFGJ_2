@@ -11,7 +11,8 @@ public enum State
 public class Enemy : Humanoid
 {
     [Header("Enemy")]
-    public float Speed = 5.0f;
+    public float MinSpeed = 4.0f;
+    public float MaxSpeed = 7.0f;
     public float HitImpactMultiplier = 0.01f;
     public float Damage = 10.0f;
 
@@ -27,12 +28,14 @@ public class Enemy : Humanoid
 
     //Moving variables
     private Vector3 direction = Vector3.zero;
+    private float _speed = 0.0f;
 
     //Attack variables
     private Humanoid _target;
 
     void Start()
     {
+        _speed = UnityEngine.Random.Range(MinSpeed, MaxSpeed);
         _target = GameController.Instance.Player.GetComponent<Humanoid>();
         InvokeRepeating("Attack", 1.0f, 1.0f);
     }
@@ -71,7 +74,7 @@ public class Enemy : Humanoid
 
         if(_currentState == State.MOVE_TO_TARGET)
         {
-            transform.position += direction.normalized * Speed * Time.deltaTime;
+            transform.position += direction.normalized * _speed * Time.deltaTime;
         }
         else
         {
