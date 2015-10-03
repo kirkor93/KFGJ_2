@@ -157,4 +157,12 @@ public class Player : Humanoid
             GameController.Instance.OnPlayerHPChanged();
         }
     }
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if(col.gameObject.layer == LayerMask.NameToLayer("Damagable"))
+        {
+            col.gameObject.SendMessage("Stop");
+        }
+    }
 }

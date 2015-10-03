@@ -12,7 +12,7 @@ public class Hipis : Humanoid
     {
         //Update hipis
         Vector3 direction = GameController.Instance.Player.transform.position - transform.position;
-        if(direction.magnitude > 2.0f)
+        if(direction.magnitude > 2.5f)
         {
             transform.position += direction.normalized * Time.deltaTime * Speed;
         }
@@ -30,5 +30,18 @@ public class Hipis : Humanoid
     protected override void OnDie()
     {
         Spawner.Instance.HipisDead();
+    }
+
+    void Stop()
+    {
+
+    }
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if (col.gameObject.layer == LayerMask.NameToLayer("Damagable"))
+        {
+            col.gameObject.SendMessage("Stop");
+        }
     }
 }

@@ -44,7 +44,7 @@ public class Enemy : Humanoid
     {
         _speed = UnityEngine.Random.Range(MinSpeed, MaxSpeed);
         _target = GameController.Instance.Player.GetComponent<Humanoid>();
-        InvokeRepeating("Attack", 1.0f, 1.0f);
+        //InvokeRepeating("Attack", 1.0f, 1.0f);
     }
 
     void FixedUpdate()
@@ -69,19 +69,16 @@ public class Enemy : Humanoid
             transform.localScale = scale;
             _lookRight = false;
         }
-        if (direction.magnitude < 2.7f)
-        {
-            ChangeState(State.ATTACK);
-        }
-        else if(direction.magnitude > 2.9f)
-        {
-            ChangeState(State.MOVE_TO_TARGET);
-        }
 
         if (_currentState == State.MOVE_TO_TARGET)
         {
             //_myBody.velocity = direction.normalized * _speed;
             transform.position += direction.normalized * _speed * Time.deltaTime;
+        }
+
+        if(direction.magnitude > 2.9f)
+        {
+            ChangeState(State.MOVE_TO_TARGET);
         }
     }
 
@@ -147,6 +144,8 @@ public class Enemy : Humanoid
             return false;
         }
 
+        ChangeState(State.MOVE_TO_TARGET);
+
         return true;
     }
 
@@ -162,11 +161,26 @@ public class Enemy : Humanoid
             return;
         }
 
+        Debug.Log("Attack");
+
         if(_target != null)
         {
             Vector3 direction = _target.transform.position - transform.position;
             direction.Normalize();
             _target.Hit(direction, Damage, this);
+        }
+    }
+
+    void Stop()
+    {
+        ChangeState(State.ATTACK);
+    }
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if (col.gameObject.layer == LayerMask.NameToLayer("Damagable"))
+        {
+            col.gameObject.SendMessage("Stop");
         }
     }
 }
