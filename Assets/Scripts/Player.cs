@@ -18,12 +18,15 @@ public class Player : Humanoid
     private PlayerInput _myInput;
     private Rigidbody2D _myBody;
     private Animator _myAnimator;
+    private ParticleSystem _myParticles;
 
     private float _timeElapsed = 0.0f;
     private bool _isDay = false;
 
     private RigidbodyConstraints2D _nightConstraints;
     private RigidbodyConstraints2D _dayConstraints;
+
+    private Vector3 _dayPosition;
 
 	// Use this for initialization
 	void Start ()
@@ -33,6 +36,7 @@ public class Player : Humanoid
         _myInput = GetComponent<PlayerInput>();
         _myBody = GetComponent<Rigidbody2D>();
         _myAnimator = GetComponent<Animator>();
+        _myParticles = GetComponentInChildren<ParticleSystem>();
 
         _dayConstraints = RigidbodyConstraints2D.FreezeAll;
         _nightConstraints = RigidbodyConstraints2D.FreezeRotation;
@@ -48,6 +52,8 @@ public class Player : Humanoid
         TreeSprite.SetActive(true);
         HeroSprite.SetActive(false);
         _myBody.constraints = _dayConstraints;
+        _myParticles.Emit(5);
+        _dayPosition = transform.position;
     }
 
     void OnNight()
@@ -56,6 +62,7 @@ public class Player : Humanoid
         TreeSprite.SetActive(false);
         HeroSprite.SetActive(true);
         _myBody.constraints = _nightConstraints;
+        _myParticles.Emit(5);
     }
 
     void FixedUpdate()
@@ -65,6 +72,10 @@ public class Player : Humanoid
             Vector3 movement = _myInput.GetMovementVector();
             _myBody.velocity = movement * Speed;
             _myAnimator.SetBool("isWalking", movement.magnitude > 0.0f);
+        }
+        else
+        {
+            transform.position = _dayPosition;
         }
     }
     
