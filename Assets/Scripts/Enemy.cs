@@ -69,11 +69,11 @@ public class Enemy : Humanoid
             transform.localScale = scale;
             _lookRight = false;
         }
-        if (direction.magnitude < 2.5f)
+        if (direction.magnitude < 2.7f)
         {
             ChangeState(State.ATTACK);
         }
-        else
+        else if(direction.magnitude > 2.9f)
         {
             ChangeState(State.MOVE_TO_TARGET);
         }

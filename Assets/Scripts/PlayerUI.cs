@@ -169,7 +169,7 @@ public class PlayerUI : MonoBehaviour
         HPBarImage.gameObject.SetActive(false);
         HPText.gameObject.SetActive(false);
         ScoreText.gameObject.SetActive(false);
-        YourScoreText.text = "Your score: ";
+        YourScoreText.text = "YOUR SCORE: ";
         YourScoreText.text += PlayerState.Instance.Score.ToString();
         YourScoreText.gameObject.SetActive(true);
         RestartText.gameObject.SetActive(true);
