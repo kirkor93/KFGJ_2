@@ -17,9 +17,17 @@ public class PropsGenerator : MonoBehaviour
     void Start()
     {
         _myRenderer = GetComponent<SpriteRenderer>();
+        for(int i = 2; i < transform.childCount; ++i)
+        {
+            _generated.Add(transform.GetChild(i).gameObject);
+        }
         foreach(GameObject go in _generated)
         {
-            _propsRenderers.Add(go.GetComponent<SpriteRenderer>());
+            SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
+            if(sr != null)
+            {
+                _propsRenderers.Add(sr);
+            }
         }
         GameController.Instance.OnDay += OnDay;
         GameController.Instance.OnNight += OnNight;
