@@ -41,6 +41,9 @@ public class Enemy : Humanoid
     [SerializeField]
     private Animator _myAnimator;
 
+    //Protecting from staying
+    private Vector3 _prevPosition;
+
     void Start()
     {
         _speed = UnityEngine.Random.Range(MinSpeed, MaxSpeed);
@@ -74,6 +77,11 @@ public class Enemy : Humanoid
         if (_currentState == State.MOVE_TO_TARGET)
         {
             //_myBody.velocity = direction.normalized * _speed;
+            if((_prevPosition - transform.position).magnitude < 0.01f)
+            {
+                transform.position += direction.normalized;
+            }
+            _prevPosition = transform.position;
             transform.position += direction.normalized * _speed * Time.deltaTime;
         }
 
