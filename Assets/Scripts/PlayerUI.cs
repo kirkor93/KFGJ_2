@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using System.Globalization;
 
 struct ScoreChangedStruct
 {
@@ -20,6 +21,7 @@ public class PlayerUI : MonoBehaviour
     public UnityEngine.UI.Image ForegroundClockImage;
     public UnityEngine.UI.Image ClockImage;
     public UnityEngine.UI.Image HPBarImage;
+    public UnityEngine.UI.Text DayText;
 
     public UnityEngine.UI.Text HPText;
     public UnityEngine.UI.Text GameOverText;
@@ -68,6 +70,7 @@ public class PlayerUI : MonoBehaviour
         ForegroundClockImage.sprite = DayClockSprite;
         BackgroundClockImage.sprite = NightClockSprite;
         ForegroundClockImage.fillAmount = 1.0f;
+        DayText.text = "day: " + Spawner.Instance.Wave.ToString("G", CultureInfo.InvariantCulture);
     }
 
     void OnNight()
@@ -86,7 +89,7 @@ public class PlayerUI : MonoBehaviour
 
         PlayerState.Instance.OnScoreChange += OnScoreChange;
 
-        ScoreText.text = PlayerState.Instance.Score.ToString();
+        ScoreText.text = "score: " + PlayerState.Instance.Score.ToString();
 
         while(GameController.Instance == null)
         {
@@ -126,12 +129,12 @@ public class PlayerUI : MonoBehaviour
         }
         else if(valueChanged >= 0.0f)
         {
-            scs.TextColor = Color.white;
+            scs.TextColor = Color.green;
             scs.ScoreText.text = "+";
         }
 
         scs.ScoreText.text += valueChanged.ToString();
-        ScoreText.text = PlayerState.Instance.Score.ToString();
+        ScoreText.text = "score: " + PlayerState.Instance.Score;
 
         StartCoroutine(ScoreChanged(scs));
     }
