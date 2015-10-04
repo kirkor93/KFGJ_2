@@ -38,7 +38,7 @@ public class Worm : Clickable
         float cos = dot / (direction.magnitude * transform.up.magnitude);
         float angle = Mathf.Acos(cos);
         angle *= -Mathf.Sign(Vector3.Dot(direction, transform.right));
-        transform.Rotate(new Vector3(0.0f, 0.0f, Mathf.Rad2Deg * angle));
+        transform.rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Rad2Deg * angle);
     }
 
     void Update()
@@ -58,6 +58,15 @@ public class Worm : Clickable
                     AudioSource.PlayClipAtPoint(ThrowSound, transform.position);
                     _myBody.velocity = _swipeDistance;
                     Destroy(gameObject, 3.0f);
+                }
+                else
+                {
+                    Vector3 direction = GameController.Instance.Player.transform.position - transform.position;
+                    float dot = Vector3.Dot(direction, transform.up);
+                    float cos = dot / (direction.magnitude * transform.up.magnitude);
+                    float angle = Mathf.Acos(cos);
+                    angle *= -Mathf.Sign(Vector3.Dot(direction, transform.right));
+                    transform.rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Rad2Deg * angle);
                 }
                 return;
             }
