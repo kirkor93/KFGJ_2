@@ -133,7 +133,7 @@ public class Spawner : Singleton<Spawner>
         Vector3 position = new Vector3(x, y, 0.0f);
         Instantiate(SunPrefab, position, Quaternion.identity);
 
-        Invoke("SpawnSun", Random.Range(1.0f, 2.0f));
+        Invoke("SpawnSun", Random.Range(1.0f, 2.0f) / Mathf.Clamp((0.3f * _wave), 0.8f, float.MaxValue));
     }
 
     private void SpawnWorm()
