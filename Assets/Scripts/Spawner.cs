@@ -67,6 +67,11 @@ public class Spawner : Singleton<Spawner>
             return;
         }
 
+        if(GameController.Instance.Timer > 0.6f * GameController.Instance.PeriodTime)
+        {
+            return;
+        }
+
         int howMuch = (int)(_wave * Random.Range(1.0f, 2.0f));
 
         for(int i = 0; i < howMuch; ++i)
@@ -84,6 +89,11 @@ public class Spawner : Singleton<Spawner>
     private void SpawnHipis()
     {
         if (GameController.Instance.CurrentPeriod == Period.DAY)
+        {
+            return;
+        }
+
+        if (GameController.Instance.Timer > 0.6f * GameController.Instance.PeriodTime)
         {
             return;
         }
