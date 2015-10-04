@@ -21,6 +21,11 @@ public class Spawner : Singleton<Spawner>
     private Vector3 _minimumPoint;
     private Vector3 _maximumPoint;
 
+    public int Wave
+    {
+        get { return _wave; }
+    }
+
     protected override void Awake()
     {
         base.Awake();
