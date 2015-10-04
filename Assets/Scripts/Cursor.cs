@@ -10,6 +10,7 @@ public class Cursor : MonoBehaviour
 
     void Start()
     {
+        UnityEngine.Cursor.visible = false;
         _myRenderer = GetComponent<SpriteRenderer>();
         GameController.Instance.OnDay += OnDay;
         GameController.Instance.OnNight += OnNight;
