@@ -4,11 +4,56 @@ using System.Collections.Generic;
 
 public class PropsGenerator : MonoBehaviour
 {
+    public Color DayColor;
+    public Color NightColor;
     public List<GameObject> Props;
     public Transform MinPoint;
     public Transform MaxPoint;
 
     private List<GameObject> _generated = new List<GameObject>();
+    private SpriteRenderer _myRenderer;
+    private List<SpriteRenderer> _propsRenderers = new List<SpriteRenderer>();
+
+    void Start()
+    {
+        _myRenderer = GetComponent<SpriteRenderer>();
+        foreach(GameObject go in _generated)
+        {
+            _propsRenderers.Add(go.GetComponent<SpriteRenderer>());
+        }
+        GameController.Instance.OnDay += OnDay;
+        GameController.Instance.OnNight += OnNight;
+    }
+
+    void OnNight()
+    {
+        if(_myRenderer != null)
+        {
+            _myRenderer.color = NightColor;
+        }
+        foreach(SpriteRenderer sr in _propsRenderers)
+        {
+            if(sr != null)
+            {
+                sr.color = NightColor;
+            }
+        }
+    }
+
+    void OnDay()
+    {
+        if (_myRenderer != null)
+        {
+            _myRenderer.color = DayColor;
+        }
+        foreach (SpriteRenderer sr in _propsRenderers)
+        {
+            if (sr != null)
+            {
+                sr.color = DayColor;
+            }
+        }
+    }
 
     [ContextMenu("Generate")]
     void Generate()
