@@ -67,7 +67,7 @@ public class Spawner : Singleton<Spawner>
             return;
         }
 
-        if(GameController.Instance.Timer > 0.6f * GameController.Instance.PeriodTime)
+        if(GameController.Instance.Timer > 0.7f * GameController.Instance.PeriodTime)
         {
             return;
         }
